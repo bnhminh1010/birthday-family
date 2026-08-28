@@ -322,6 +322,7 @@ export default function Home() {
       
         {filmstripState !== null && (
           <FilmstripModal 
+            key={filmstripState.index}
             chapter={familyMemories[filmstripState.index]} fromBottom={filmstripState.fromBottom} 
             reducedMotion={prefersReducedMotion}
             onClose={() => setFilmstripState(null)} 

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { X, Projector, Film } from "lucide-react";
 import { useRef, useEffect } from "react";
 import { soundEngine } from "@/lib/soundEngine";
+import { useIsMobile } from "@/hooks/useMobile";
 
 interface FilmstripModalProps {
   chapter: any;
@@ -12,6 +13,7 @@ interface FilmstripModalProps {
 
 export default function FilmstripModal({ chapter, fromBottom = false, reducedMotion = false, onClose }: FilmstripModalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mobile = useIsMobile();
 
   useEffect(() => {
     soundEngine.playProjector();
@@ -22,13 +24,20 @@ export default function FilmstripModal({ chapter, fromBottom = false, reducedMot
     const ref = containerRef.current;
     if (!ref) return;
 
-    if (reducedMotion) return;
+    // Each chapter owns an independent filmstrip position. Without this
+    // reset, advancing from the last frame reuses the previous chapter's
+    // scrollTop and makes the new chapter appear to start at its last photo.
+    const resetPosition = () => {
+      ref.scrollTop = fromBottom ? ref.scrollHeight : 0;
+    };
+    resetPosition();
 
-    if (fromBottom) {
-      setTimeout(() => {
-        if (ref) ref.scrollTop = ref.scrollHeight;
-      }, 50);
-    }
+    // On touch screens the filmstrip is a self-contained viewer. Closing it
+    // at the scroll boundary lets the gesture leak into the page and jump to
+    // the next cake slice before the user can read the last frame.
+    if (reducedMotion || mobile) return;
+
+    if (fromBottom) setTimeout(resetPosition, 50);
 
     let isClosing = false; 
     let canClose = false;
@@ -119,7 +128,7 @@ export default function FilmstripModal({ chapter, fromBottom = false, reducedMot
       ref.removeEventListener('touchstart', handleTouchStart);
       ref.removeEventListener('touchmove', handleTouchMove);
     };
-  }, [onClose, fromBottom, reducedMotion]);
+  }, [onClose, fromBottom, reducedMotion, mobile]);
 
   return (
     <>
