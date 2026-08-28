@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Phác thảo gia đình</title>
+  <desc id="desc">Bố, mẹ, anh trai và em gái đứng cạnh nhau trong một bức phác thảo trắng đen.</desc>
+  <rect width="1200" height="800" fill="#f7f7f5"/>
+  <path d="M90 690c170-34 300-25 470-8 195 20 366-18 550 8" fill="none" stroke="#d0d0cc" stroke-width="5"/>
+  <g fill="none" stroke="#222" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Bố -->
+    <circle cx="255" cy="205" r="78" stroke-width="9"/>
+    <path d="M180 190c18-65 122-86 151-8M197 255c22 24 88 31 118 0M224 204h6m48 0h6M238 239c15 10 31 10 45 0" stroke-width="8"/>
+    <path d="M165 330c29-45 150-45 181 0l34 310H132zM210 353l45 70 45-70M255 423v211M179 398l-48 127M331 398l53 127" stroke-width="10"/>
+    <path d="M155 640h-35M355 640h38" stroke-width="12"/>
+
+    <!-- Mẹ -->
+    <circle cx="500" cy="215" r="74" stroke-width="9"/>
+    <path d="M429 205c-3-74 135-96 151 4M442 253c27 30 76 28 111 0M470 213h6m48 0h6M482 243c13 11 27 11 40 0" stroke-width="8"/>
+    <path d="M408 337c38-43 143-43 181 0l55 303H355zM438 355l62 89 62-89M500 444v196M425 408l-57 121M575 408l59 121" stroke-width="10"/>
+    <path d="M385 640h-35M615 640h38" stroke-width="12"/>
+
+    <!-- Anh trai -->
+    <circle cx="760" cy="225" r="70" stroke-width="9"/>
+    <path d="M696 205c19-66 112-70 137-2M722 226h6m53 0h6M744 255c14 9 28 9 41 0" stroke-width="8"/>
+    <path d="M688 345c31-38 113-38 145 0l47 295H642zM715 360l45 74 45-74M760 434v206M705 405l-50 120M815 405l51 120" stroke-width="10"/>
+    <path d="M670 640h-31M850 640h35" stroke-width="12"/>
+
+    <!-- Em gái -->
+    <circle cx="980" cy="238" r="63" stroke-width="9"/>
+    <path d="M922 234c-4-65 113-81 124 5M942 234h6m47 0h6M960 261c12 9 25 9 36 0" stroke-width="8"/>
+    <path d="M918 350c27-34 98-34 125 0l50 290H875zM938 365l42 70 42-70M980 435v205M930 405l-44 118M1030 405l47 118" stroke-width="10"/>
+    <path d="M900 640h-30M1060 640h34" stroke-width="12"/>
+  </g>
+  <g fill="#444" font-family="Georgia, serif" font-size="24" text-anchor="middle">
+    <text x="255" y="735">Bố</text><text x="500" y="735">Mẹ</text><text x="760" y="735">Anh trai</text><text x="980" y="735">Em gái</text>
+  </g>
+</svg>
