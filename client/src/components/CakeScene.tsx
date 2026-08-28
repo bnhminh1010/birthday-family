@@ -256,7 +256,7 @@ export default function CakeScene(props: any) {
         </EffectComposer>
       )}
 
-      <OrbitControls enableZoom={false} enablePan={false} maxPolarAngle={Math.PI / 2 + 0.1} minPolarAngle={Math.PI / 4} enableDamping />
+      <OrbitControls enableRotate={!mobile} enableZoom={false} enablePan={false} maxPolarAngle={Math.PI / 2 + 0.1} minPolarAngle={Math.PI / 4} enableDamping />
     </Canvas>
   );
 }

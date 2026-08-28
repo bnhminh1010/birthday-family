@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 type BlowDetectorOptions = {
   enabled: boolean;
+  armed?: boolean;
   onBlowOut: () => void;
   threshold?: number;
 };
@@ -14,6 +15,7 @@ export type BlowStatus = "idle" | "listening" | "denied" | "unsupported";
 
 export function useBlowDetector({
   enabled,
+  armed = true,
   onBlowOut,
   threshold = 0.1,
 }: BlowDetectorOptions) {
@@ -71,12 +73,12 @@ export function useBlowDetector({
           const nextIntensity = Math.min(1, Math.max(0, (rms - 0.015) * 11));
           setIntensity(nextIntensity);
 
-          if (nextIntensity > threshold && !firedRef.current) {
+          if (armed && nextIntensity > threshold && !firedRef.current) {
             firedRef.current = true;
             onBlowOut();
           }
 
-          if (active && !firedRef.current) animationFrame = requestAnimationFrame(sample);
+          if (active) animationFrame = requestAnimationFrame(sample);
         };
 
         sample();
@@ -93,7 +95,7 @@ export function useBlowDetector({
       stream?.getTracks().forEach((track) => track.stop());
       void audioContext?.close();
     };
-  }, [enabled, onBlowOut, threshold]);
+  }, [enabled, armed, onBlowOut, threshold]);
 
   return { intensity, status };
 }

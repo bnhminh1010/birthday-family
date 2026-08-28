@@ -46,6 +46,7 @@ body, html {
 }
 .unified-canvas-stage canvas {
   filter: drop-shadow(0 26px 22px rgba(42, 30, 18, 0.32));
+  touch-action: pan-y;
 }
 .ambient-candle-halo,
 .ambient-film-grain,
@@ -100,6 +101,7 @@ body, html {
   background-size: auto, auto, 180px 180px;
   animation: grain-drift 0.7s steps(2) infinite;
 }
+.mobile-slice-nav { display: none; }
 @keyframes halo-breathe {
   from { opacity: 0.65; transform: scale(0.98); }
   to { opacity: 1; transform: scale(1.03); }
@@ -476,6 +478,46 @@ body, html {
 
 /* Responsive layout: keep the cinematic composition usable on phones. */
 @media (max-width: 767px) {
+  .mobile-slice-nav {
+    position: fixed;
+    left: 50%;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    z-index: 45;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 7px 9px;
+    border: 1px solid rgba(44, 44, 44, 0.14);
+    border-radius: 999px;
+    background: rgba(250, 248, 245, 0.86);
+    box-shadow: 0 8px 24px rgba(44, 34, 22, 0.14);
+    backdrop-filter: blur(12px);
+  }
+  .mobile-slice-nav span {
+    min-width: 72px;
+    color: var(--text-primary);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .mobile-slice-nav button {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--text-primary);
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .mobile-slice-nav button:disabled { opacity: 0.28; cursor: default; }
+
   .site-navbar {
     height: 56px;
     padding: 0 14px;

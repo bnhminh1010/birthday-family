@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useScroll, useSpring, useMotionValueEvent, useReducedMotion } from "framer-motion";
-import { AudioLines, CakeSlice as CakeSliceIcon, Flame, Mail, RotateCcw, Sparkles, Volume2, VolumeX, X, Image as ImageIcon } from "lucide-react";
+import { AudioLines, CakeSlice as CakeSliceIcon, ChevronLeft, ChevronRight, Flame, Mail, RotateCcw, Sparkles, Volume2, VolumeX, X, Image as ImageIcon } from "lucide-react";
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import Lenis from "lenis";
@@ -74,6 +74,16 @@ export default function Home() {
   const [stage, setStage] = useState<"hero"|"centering"|"slices"|"finale">("hero");
   const prefersReducedMotion = useReducedMotion() ?? false;
 
+  const navigateSlices = useCallback((direction: "next" | "prev") => {
+    const p = smoothProgress.get();
+    const targets = [0, 0.34, 0.50, 0.65, 0.81, 1.0];
+    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const target = direction === "next"
+      ? targets.find((value) => value > p + 0.05) ?? 1
+      : [...targets].reverse().find((value) => value < p - 0.05) ?? 0;
+    lenisRef.current?.scrollTo(target * maxScroll, { duration: 1.1 });
+  }, [smoothProgress]);
+
   // Auto-open filmstrip instantly when reaching a slice
   const prevSliceRef = useRef(-1);
   useEffect(() => {
@@ -132,33 +142,18 @@ export default function Home() {
           setFilmstripState(null);
           // Small delay to let modal close before scrolling
           setTimeout(() => {
-            navigateSlices(e.code);
+            navigateSlices(e.code === 'ArrowDown' ? 'next' : 'prev');
           }, 100);
           return;
         }
         
-        navigateSlices(e.code);
-      }
-  };
-
-    const navigateSlices = (code: string) => {
-      const p = smoothProgress.get();
-      // Target progress points: Hero, four slices, then the finale.
-      const targets = [0, 0.34, 0.50, 0.65, 0.81, 1.0];
-      const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-      
-      if (code === 'ArrowDown') {
-        const next = targets.find(t => t > p + 0.05) ?? 1.0;
-        lenisRef.current?.scrollTo(next * maxScroll, { duration: 1.5 });
-      } else {
-        const prev = [...targets].reverse().find(t => t < p - 0.05) ?? 0;
-        lenisRef.current?.scrollTo(prev * maxScroll, { duration: 1.5 });
+        navigateSlices(e.code === 'ArrowDown' ? 'next' : 'prev');
       }
   };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [candleLit, stage, extinguished, smoothProgress, filmstripState, triggerCelebration]);
+  }, [candleLit, stage, extinguished, filmstripState, triggerCelebration, navigateSlices]);
 
 
   useMotionValueEvent(smoothProgress, "change", (p) => {
@@ -177,7 +172,7 @@ export default function Home() {
     }
   });
 
-  const { intensity } = useBlowDetector({ enabled: candleLit && !extinguished, onBlowOut: triggerCelebration, threshold: 0.1 });
+  const { intensity, status: blowStatus } = useBlowDetector({ enabled: !extinguished, armed: candleLit && !extinguished, onBlowOut: triggerCelebration, threshold: 0.2 });
 
   
   const handleReplay = () => {
@@ -237,6 +232,16 @@ export default function Home() {
           <div className="ambient-candle-halo" aria-hidden="true" />
           <div className="ambient-film-grain" aria-hidden="true" />
 
+          <nav className="mobile-slice-nav" aria-label="Điều hướng lát ký ức">
+            <button type="button" aria-label="Lát trước" onClick={() => navigateSlices("prev")} disabled={stage === "hero"}>
+              <ChevronLeft size={20} />
+            </button>
+            <span>{stage === "finale" ? "Kết thúc" : `Lát ${activeSlice + 1} / ${familyMemories.length}`}</span>
+            <button type="button" aria-label="Lát tiếp theo" onClick={() => navigateSlices("next")} disabled={stage === "finale"}>
+              <ChevronRight size={20} />
+            </button>
+          </nav>
+
           <AnimatePresence mode="wait">
             {stage === "hero" && (
               <motion.div key="hero-stage" className="hero-stage-overlay" exit={{ opacity: 0, transition: { duration: 0.5 } }}>
@@ -257,7 +262,7 @@ export default function Home() {
                   {candleLit && !extinguished && (
                     <motion.div className="mic-blow-card" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                       <div className="mic-audio-bars">{[0,1,2,3].map(i => <span key={i} style={{ height: 8 + intensity * (10 + i * 4) }} />)}</div>
-                      <div className="mic-copy"><strong><AudioLines size={14} style={{display:'inline', marginRight:4}} /> Thổi vào Micro</strong><small>Hoặc chạm vào ngọn lửa</small></div>
+                      <div className="mic-copy"><strong><AudioLines size={14} style={{display:'inline', marginRight:4}} /> Thổi mạnh vào Micro</strong><small>{blowStatus === "listening" ? "Micro đang hoạt động • Hoặc chạm vào ngọn lửa" : "Chưa cấp quyền micro • Hoặc chạm vào ngọn lửa"}</small></div>
                     </motion.div>
                   )}
                 </div>
