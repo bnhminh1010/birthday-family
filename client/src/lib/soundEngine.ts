@@ -274,41 +274,50 @@ class SoundEngine {
    * 7. Paper Letter Unfold
    */
 
-  private projectorInterval: any = null;
+  private projectorInterval: ReturnType<typeof setInterval> | null = null;
   private projectorGain: GainNode | null = null;
-  
+
   public playProjector() {
+    if (this.isMuted) return;
     const ctx = this.getContext();
     if (!ctx || this.projectorInterval) return;
-    
+
     this.projectorGain = ctx.createGain();
-    this.projectorGain.gain.value = 0.08;
-    if (ctx) this.projectorGain.connect(ctx.destination);
-    
+    this.projectorGain.gain.value = 0.018;
+    this.projectorGain.connect(ctx.destination);
+
     const tick = () => {
       if (!ctx || !this.projectorGain) return;
       const osc = ctx.createOscillator();
-      osc.type = 'square';
-      osc.frequency.setValueAtTime(200 + Math.random()*100, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(10, ctx.currentTime + 0.05);
-      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(110 + Math.random() * 35, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(45, ctx.currentTime + 0.08);
+
       const env = ctx.createGain();
-      env.gain.setValueAtTime(1, ctx.currentTime);
-      env.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
-      
+      env.gain.setValueAtTime(0.25, ctx.currentTime);
+      env.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+
       osc.connect(env);
       env.connect(this.projectorGain);
       osc.start();
-      osc.stop(ctx.currentTime + 0.05);
+      osc.stop(ctx.currentTime + 0.08);
     };
-    
-    this.projectorInterval = setInterval(tick, 110);
+
+    // A slower, softer motor pulse keeps the cinematic cue present without
+    // turning the memory viewer into an always-on mechanical noise loop.
+    this.projectorInterval = setInterval(tick, 280);
   }
-  
+
   public stopProjector() {
     if (this.projectorInterval) {
       clearInterval(this.projectorInterval);
       this.projectorInterval = null;
+    }
+    if (this.projectorGain && this.ctx) {
+      const gain = this.projectorGain;
+      gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.025);
+      window.setTimeout(() => gain.disconnect(), 120);
+      this.projectorGain = null;
     }
   }
 
@@ -385,7 +394,7 @@ class SoundEngine {
 
     // Happy Birthday notes (G4, A4, B4, C5, D5, E5, F5, G5)
     const G4 = 392.0, A4 = 440.0, B4 = 493.88, C5 = 523.25, D5 = 587.33, E5 = 659.25, F5 = 698.46, G5 = 783.99;
-    
+
     // Notes and durations [pitch, beatLength]
     const melody: [number, number][] = [
       [G4, 0.75], [G4, 0.25], [A4, 1.0], [G4, 1.0], [C5, 1.0], [B4, 2.0],
